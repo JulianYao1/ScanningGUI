@@ -26,11 +26,11 @@ description: "Task list for picklist scanner feature implementation"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Install production dependencies (onscan.js, mysql2) via npm install
-- [ ] T002 [P] Install development dependencies (@nuxt/test-utils, @vue/test-utils, @playwright/test, vitest, happy-dom)
-- [ ] T003 [P] Create .env file with database credentials (DB_HOST, DB_USER, DB_PASSWORD, DB_NAME)
-- [ ] T004 [P] Add .env to .gitignore and create .env.example template
-- [ ] T005 Configure Nuxt config in nuxt.config.ts for SPA mode and devtools
+- [X] T001 Install production dependencies (onscan.js, mysql2) via npm install
+- [X] T002 [P] Install development dependencies (@nuxt/test-utils, @vue/test-utils, @playwright/test, vitest, happy-dom)
+- [X] T003 [P] Create .env file with database credentials (DB_HOST, DB_USER, DB_PASSWORD, DB_NAME)
+- [X] T004 [P] Add .env to .gitignore and create .env.example template
+- [X] T005 Configure Nuxt config in nuxt.config.ts for SPA mode and devtools
 
 ---
 
@@ -40,13 +40,13 @@ description: "Task list for picklist scanner feature implementation"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T006 Create TypeScript interfaces in types/scanning.ts (ScanningSession, SessionProduct, SessionStatus enum, BoxStyle enum)
-- [ ] T007 [P] Create database types in server/types/database.ts (DatabaseProduct interface)
-- [ ] T008 [P] Create error types in types/errors.ts (ErrorCode enum, AppError interface)
-- [ ] T009 Create MySQL connection pool in server/utils/database.ts with mysql2
-- [ ] T010 Create server API endpoint in server/api/products/[barcode].get.ts for product lookup
-- [ ] T011 [P] Create barcode validator utility in utils/barcodeValidator.ts (isValidBarcode, sanitizeBarcode functions)
-- [ ] T012 Test database connection and API endpoint with sample barcode query
+- [X] T006 Create TypeScript interfaces in types/scanning.ts (ScanningSession, SessionProduct, SessionStatus enum, BoxStyle enum)
+- [X] T007 [P] Create database types in server/types/database.ts (DatabaseProduct interface)
+- [X] T008 [P] Create error types in types/errors.ts (ErrorCode enum, AppError interface)
+- [X] T009 Create MySQL connection pool in server/utils/database.ts with mysql2
+- [X] T010 Create server API endpoint in server/api/products/[barcode].get.ts for product lookup
+- [X] T011 [P] Create barcode validator utility in utils/barcodeValidator.ts (isValidBarcode, sanitizeBarcode functions)
+- [X] T012 Test database connection and API endpoint with sample barcode query
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -60,18 +60,18 @@ description: "Task list for picklist scanner feature implementation"
 
 ### Implementation for User Story 1
 
-- [ ] T013 [P] [US1] Create useProductLookup composable in composables/useProductLookup.ts with product fetch logic
-- [ ] T014 [P] [US1] Create useScanning composable in composables/useScanning.ts with session state management (createSession, addProduct, quantity increment)
-- [ ] T015 [P] [US1] Create useBarcodeScanner composable in composables/useBarcodeScanner.ts with onscan.js integration
-- [ ] T016 [P] [US1] Create useSessionPersistence composable in composables/useSessionPersistence.ts with localStorage save/load
-- [ ] T017 [US1] Create BoxSetupForm component in components/BoxSetupForm.vue (box number input, box style dropdown)
-- [ ] T018 [US1] Create BarcodeScanner component in components/BarcodeScanner.vue (integrates useBarcodeScanner, shows scan feedback)
-- [ ] T019 [P] [US1] Create ProductListItem component in components/ProductListItem.vue (displays single product with quantity)
-- [ ] T020 [US1] Create ProductList component in components/ProductList.vue (displays all scanned products using ProductListItem)
-- [ ] T021 [US1] Create main scanning page in pages/index.vue (integrates BoxSetupForm, BarcodeScanner, ProductList)
-- [ ] T022 [US1] Update app.vue to include routing and basic layout
-- [ ] T023 [US1] Implement error handling for invalid barcodes (FR-011: show error message with barcode code, allow retry)
-- [ ] T024 [US1] Add session persistence on scan (save to localStorage after each product added)
+- [X] T013 [P] [US1] Create useProductLookup composable in composables/useProductLookup.ts with product fetch logic
+- [X] T014 [P] [US1] Create useScanning composable in composables/useScanning.ts with session state management (createSession, addProduct, quantity increment)
+- [X] T015 [P] [US1] Create useBarcodeScanner composable in composables/useBarcodeScanner.ts with onscan.js integration
+- [X] T016 [P] [US1] Create useSessionPersistence composable in composables/useSessionPersistence.ts with localStorage save/load
+- [X] T017 [US1] Create BoxSetupForm component in components/BoxSetupForm.vue (box number input, box style dropdown)
+- [X] T018 [US1] Create BarcodeScanner component in components/BarcodeScanner.vue (integrates useBarcodeScanner, shows scan feedback)
+- [X] T019 [P] [US1] Create ProductListItem component in components/ProductListItem.vue (displays single product with quantity)
+- [X] T020 [US1] Create ProductList component in components/ProductList.vue (displays all scanned products using ProductListItem)
+- [X] T021 [US1] Create main scanning page in pages/index.vue (integrates BoxSetupForm, BarcodeScanner, ProductList)
+- [X] T022 [US1] Update app.vue to include routing and basic layout
+- [X] T023 [US1] Implement error handling for invalid barcodes (FR-011: show error message with barcode code, allow retry)
+- [X] T024 [US1] Add session persistence on scan (save to localStorage after each product added)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently. Users can create sessions, scan products, see quantity increments, and have data persist.
 
