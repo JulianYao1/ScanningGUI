@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pwsh -File .specify/scripts/powershell/create-new-feature.ps1 -Json \"I would like to build an app that assists in creating a picklist. The user will select box number and box style before scanning products that are inside the box. Each barcode represents a product from a database. Once the user is done scanning they can download a pickfile of the scanned products.\" -ShortName \"picklist-scanner\")",
+      "Bash(powershell -File .specify/scripts/powershell/create-new-feature.ps1 -Json \"I would like to build an app that assists in creating a picklist. The user will select box number and box style before scanning products that are inside the box. Each barcode represents a product from a database. Once the user is done scanning they can download a pickfile of the scanned products.\" -ShortName \"picklist-scanner\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
