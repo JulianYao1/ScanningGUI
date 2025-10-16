@@ -6,13 +6,22 @@
     </header>
 
     <main class="page-content">
+      <!-- Session Manager (T034, T035) -->
+      <SessionManager
+        :sessions="sessions"
+        :current-session-id="currentSessionId"
+        @switch-session="handleSwitchSession"
+        @delete-session="handleDeleteSession"
+        @create-session="showSetupForm = true"
+      />
+
       <!-- Session Setup -->
-      <section v-if="!currentSession" class="setup-section">
+      <section v-if="showSetupForm || (!currentSession && sessions.length === 0)" class="setup-section">
         <BoxSetupForm @start-session="handleStartSession" />
       </section>
 
       <!-- Active Session -->
-      <section v-else class="session-section">
+      <section v-else-if="currentSession" class="session-section">
         <div class="session-header">
           <div class="session-info">
             <h2>Box: {{ currentSession.boxNumber }}</h2>
@@ -41,6 +50,9 @@
 
         <!-- Product List -->
         <ProductList :products="currentSession.products" />
+
+        <!-- Download Picklist (T028) -->
+        <PicklistDownload :session="currentSession" />
       </section>
     </main>
   </div>
@@ -51,20 +63,81 @@ import type { BoxStyle } from '~/types/scanning'
 import BoxSetupForm from '~/components/BoxSetupForm.vue'
 import BarcodeScanner from '~/components/BarcodeScanner.vue'
 import ProductList from '~/components/ProductList.vue'
+import PicklistDownload from '~/components/PicklistDownload.vue'
+import SessionManager from '~/components/SessionManager.vue'
 import { useScanning } from '~/composables/useScanning'
 import { useProductLookup } from '~/composables/useProductLookup'
 import { useSessionPersistence } from '~/composables/useSessionPersistence'
 import { isValidBarcode, sanitizeBarcode } from '~/utils/barcodeValidator'
 
-const { currentSession, createSession, addProduct, clearSession } = useScanning()
+const {
+  sessions,
+  currentSession,
+  currentSessionId,
+  createSession,
+  switchSession,
+  addProduct,
+  deleteSession: removeSession,
+  loadSessions
+} = useScanning()
+
 const { lookupProduct, loading, error } = useProductLookup()
-const { saveSession } = useSessionPersistence()
+const { saveSession, saveAllSessions, loadAllSessions, deleteSession: deletePersistentSession } = useSessionPersistence()
 
 const errorMessage = ref<string | null>(null)
+const showSetupForm = ref(false)
+
+// Load sessions on mount (T037)
+onMounted(() => {
+  const stored = loadAllSessions()
+  if (stored.sessions.length > 0) {
+    // Convert date strings back to Date objects
+    const loadedSessions = stored.sessions.map(session => ({
+      ...session,
+      createdAt: new Date(session.createdAt),
+      updatedAt: new Date(session.updatedAt),
+      products: session.products.map(p => ({
+        ...p,
+        firstScannedAt: new Date(p.firstScannedAt),
+        lastScannedAt: new Date(p.lastScannedAt)
+      }))
+    }))
+
+    loadSessions(loadedSessions)
+  }
+})
+
+// Watch sessions and save all when changed (T037)
+watch(sessions, (newSessions) => {
+  if (newSessions.length > 0) {
+    saveAllSessions(newSessions)
+  }
+}, { deep: true })
 
 const handleStartSession = (boxNumber: string, boxStyle: BoxStyle) => {
   createSession(boxNumber, boxStyle)
   errorMessage.value = null
+  showSetupForm.value = false
+}
+
+// T036: Session switching logic
+const handleSwitchSession = (sessionId: string) => {
+  try {
+    switchSession(sessionId)
+    errorMessage.value = null
+  } catch (err: any) {
+    errorMessage.value = err.message || 'Failed to switch session'
+  }
+}
+
+// T036: Session deletion logic
+const handleDeleteSession = (sessionId: string) => {
+  try {
+    removeSession(sessionId)
+    deletePersistentSession(sessionId)
+  } catch (err: any) {
+    errorMessage.value = err.message || 'Failed to delete session'
+  }
 }
 
 const handleScan = async (barcode: string) => {
@@ -106,13 +179,12 @@ const handleScan = async (barcode: string) => {
 const handleCompleteSession = () => {
   if (!currentSession.value) return
 
-  // Save final state
+  // Mark session as completed instead of clearing (T033)
   if (currentSession.value.products.length > 0) {
-    saveSession(currentSession.value)
+    currentSession.value.status = 'completed'
+    currentSession.value.updatedAt = new Date()
   }
 
-  // Clear session
-  clearSession()
   errorMessage.value = null
 }
 

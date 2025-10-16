@@ -32,6 +32,22 @@ export function useSessionPersistence() {
     }
   }
 
+  // T037: Save all sessions at once
+  const saveAllSessions = (sessions: ScanningSession[]) => {
+    try {
+      const stored: StoredSessions = {
+        version: STORAGE_VERSION,
+        sessions,
+        lastUpdated: new Date().toISOString()
+      }
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stored))
+    } catch (error) {
+      console.error('Failed to save all sessions:', error)
+      throw new Error('STORAGE_FULL')
+    }
+  }
+
   const loadSession = (sessionId: string): ScanningSession | null => {
     const stored = loadAllSessions()
     const session = stored.sessions.find(s => s.id === sessionId)
@@ -106,6 +122,7 @@ export function useSessionPersistence() {
 
   return {
     saveSession,
+    saveAllSessions,
     loadSession,
     loadAllSessions,
     deleteSession,

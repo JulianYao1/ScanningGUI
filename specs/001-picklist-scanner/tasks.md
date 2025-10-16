@@ -85,13 +85,13 @@ description: "Task list for picklist scanner feature implementation"
 
 ### Implementation for User Story 2
 
-- [ ] T025 [P] [US2] Create CSV formatter utility in utils/csvFormatter.ts (generate CSV with proper escaping)
-- [ ] T026 [P] [US2] Create usePicklistExport composable in composables/usePicklistExport.ts (generateCSV, downloadCSV functions)
-- [ ] T027 [US2] Create PicklistDownload component in components/PicklistDownload.vue (download button, triggers CSV generation)
-- [ ] T028 [US2] Integrate PicklistDownload component into pages/index.vue
-- [ ] T029 [US2] Implement CSV format per spec (Box Number, Box Style, Barcode, Product Name, SKU, Quantity, Unit Price, Total Price)
-- [ ] T030 [US2] Add UTF-8 BOM to CSV for Excel compatibility
-- [ ] T031 [US2] Test CSV download with various product combinations (with/without prices, special characters in names)
+- [X] T025 [P] [US2] Create CSV formatter utility in utils/csvFormatter.ts (generate CSV with proper escaping)
+- [X] T026 [P] [US2] Create usePicklistExport composable in composables/usePicklistExport.ts (generateCSV, downloadCSV functions)
+- [X] T027 [US2] Create PicklistDownload component in components/PicklistDownload.vue (download button, triggers CSV generation)
+- [X] T028 [US2] Integrate PicklistDownload component into pages/index.vue
+- [X] T029 [US2] Implement CSV format per spec (Box Number, Box Style, Barcode, Product Name, SKU, Quantity, Unit Price, Total Price)
+- [X] T030 [US2] Add UTF-8 BOM to CSV for Excel compatibility
+- [X] T031 [US2] Test CSV download with various product combinations (with/without prices, special characters in names)
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently. Users can complete full workflow from session creation to CSV download.
 
@@ -105,14 +105,14 @@ description: "Task list for picklist scanner feature implementation"
 
 ### Implementation for User Story 3
 
-- [ ] T032 [P] [US3] Extend useScanning composable to support multiple sessions (session array, currentSessionId, switchSession function)
-- [ ] T033 [P] [US3] Add session status transitions in useScanning (active, paused, completed states)
-- [ ] T034 [US3] Create SessionManager component in components/SessionManager.vue (list all sessions, switch between them, show session status)
-- [ ] T035 [US3] Integrate SessionManager into pages/index.vue layout
-- [ ] T036 [US3] Implement session switching logic (pause current, activate selected)
-- [ ] T037 [US3] Update useSessionPersistence to save all sessions (not just current one)
-- [ ] T038 [US3] Add visual indicators for active vs paused sessions in UI
-- [ ] T039 [US3] Test with 10+ concurrent sessions to verify performance (SC-004)
+- [X] T032 [P] [US3] Extend useScanning composable to support multiple sessions (session array, currentSessionId, switchSession function)
+- [X] T033 [P] [US3] Add session status transitions in useScanning (active, paused, completed states)
+- [X] T034 [US3] Create SessionManager component in components/SessionManager.vue (list all sessions, switch between them, show session status)
+- [X] T035 [US3] Integrate SessionManager into pages/index.vue layout
+- [X] T036 [US3] Implement session switching logic (pause current, activate selected)
+- [X] T037 [US3] Update useSessionPersistence to save all sessions (not just current one)
+- [X] T038 [US3] Add visual indicators for active vs paused sessions in UI
+- [X] T039 [US3] Test with 10+ concurrent sessions to verify performance (SC-004)
 
 **Checkpoint**: All user stories should now be independently functional. Full application feature set complete.
 
@@ -122,20 +122,20 @@ description: "Task list for picklist scanner feature implementation"
 
 **Purpose**: Comprehensive test coverage to meet success criteria
 
-- [ ] T040 [P] Write unit test for useScanning composable in tests/unit/composables/useScanning.test.ts (test quantity increment, session creation)
-- [ ] T041 [P] Write unit test for useProductLookup composable in tests/unit/composables/useProductLookup.test.ts (test API calls, error handling)
-- [ ] T042 [P] Write unit test for usePicklistExport composable in tests/unit/composables/usePicklistExport.test.ts (test CSV generation)
-- [ ] T043 [P] Write unit test for barcodeValidator in tests/unit/utils/barcodeValidator.test.ts (test validation patterns)
-- [ ] T044 [P] Write unit test for csvFormatter in tests/unit/utils/csvFormatter.test.ts (test escaping, formatting)
-- [ ] T045 [P] Write component test for BoxSetupForm in tests/component/BoxSetupForm.test.ts (test form validation, submission)
-- [ ] T046 [P] Write component test for ProductList in tests/component/ProductList.test.ts (test rendering, quantity display)
-- [ ] T047 [P] Write component test for BarcodeScanner in tests/component/BarcodeScanner.test.ts (test scan detection)
-- [ ] T048 Install Playwright browsers (npx playwright install)
-- [ ] T049 [P] Write E2E test for User Story 1 in tests/e2e/scanning-workflow.spec.ts (full workflow: create session, scan products, verify display)
-- [ ] T050 [P] Write E2E test for User Story 2 in tests/e2e/download-picklist.spec.ts (complete session, download CSV, verify file content)
-- [ ] T051 Run all unit tests and verify passing (npm run test:unit)
-- [ ] T052 Run all E2E tests and verify passing (npm run test:e2e)
-- [ ] T053 Run type checking and verify no errors (npx nuxi typecheck)
+- [X] T040 [P] Write unit test for useScanning composable in tests/unit/composables/useScanning.test.ts (test quantity increment, session creation)
+- [X] T041 [P] Write unit test for useProductLookup composable in tests/unit/composables/useProductLookup.test.ts (test API calls, error handling)
+- [X] T042 [P] Write unit test for usePicklistExport composable in tests/unit/composables/usePicklistExport.test.ts (test CSV generation)
+- [X] T043 [P] Write unit test for barcodeValidator in tests/unit/utils/barcodeValidator.test.ts (test validation patterns)
+- [X] T044 [P] Write unit test for csvFormatter in tests/unit/utils/csvFormatter.test.ts (test escaping, formatting)
+- [X] T045 [P] Write component test for BoxSetupForm in tests/component/BoxSetupForm.test.ts (test form validation, submission)
+- [X] T046 [P] Write component test for ProductList in tests/component/ProductList.test.ts (test rendering, quantity display)
+- [X] T047 [P] Write component test for BarcodeScanner in tests/component/BarcodeScanner.test.ts (test scan detection)
+- [X] T048 Install Playwright browsers (npx playwright install)
+- [X] T049 [P] Write E2E test for User Story 1 in tests/e2e/scanning-workflow.spec.ts (full workflow: create session, scan products, verify display)
+- [X] T050 [P] Write E2E test for User Story 2 in tests/e2e/download-picklist.spec.ts (complete session, download CSV, verify file content)
+- [X] T051 Run all unit tests and verify passing (npm run test:unit)
+- [X] T052 Run all E2E tests and verify passing (npm run test:e2e)
+- [X] T053 Run type checking and verify no errors (npx nuxi typecheck)
 
 ---
 
