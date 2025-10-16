@@ -1,7 +1,7 @@
 // composables/useBarcodeScanner.ts
 // Barcode scanner integration composable using onscan.js
 
-import { onScanInit, onScanDetach } from 'onscan.js'
+import onScan from 'onscan.js'
 
 export interface BarcodeScannerOptions {
   onScan: (barcode: string) => void
@@ -16,12 +16,12 @@ export function useBarcodeScanner(options: BarcodeScannerOptions) {
   const initializeScanner = () => {
     if (isInitialized.value) return
 
-    onScanInit(document, {
+    onScan.attachTo(document, {
       onScan: (sCode: string) => {
         options.onScan(sCode)
       },
       minLength: options.minLength || 3,
-      scanTime: options.scanTime || 50,
+      timeBeforeScanTest: options.scanTime || 50,
       preventDefault: options.preventDefault !== false,
       onKeyDetect: (iKeyCode: number) => {
         // Debug: Log key detection if needed
@@ -35,7 +35,7 @@ export function useBarcodeScanner(options: BarcodeScannerOptions) {
   const detachScanner = () => {
     if (!isInitialized.value) return
 
-    onScanDetach(document)
+    onScan.detachFrom(document)
     isInitialized.value = false
   }
 

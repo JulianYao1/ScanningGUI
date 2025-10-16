@@ -2,6 +2,7 @@
 // Product lookup composable for fetching product data from API
 
 import type { SessionProduct } from '~/types/scanning'
+import type { DatabaseProduct } from '~/server/types/database'
 
 export function useProductLookup() {
   const loading = ref(false)
@@ -12,7 +13,7 @@ export function useProductLookup() {
     error.value = null
 
     try {
-      const product = await $fetch(`/api/products/${barcode}`)
+      const product = await $fetch<DatabaseProduct>(`/api/products/${barcode}`)
 
       return {
         barcode: product.barcode,

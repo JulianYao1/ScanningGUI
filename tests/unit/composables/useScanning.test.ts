@@ -21,7 +21,7 @@ describe('useScanning', () => {
       expect(session.boxNumber).toBe('BOX-001')
       expect(session.boxStyle).toBe(BoxStyle.SmallBox)
       expect(session.products).toEqual([])
-      expect(session.status).toBe('active')
+      expect(session.status).toBe(SessionStatus.Active)
       expect(session.id).toBeTruthy()
       expect(session.createdAt).toBeInstanceOf(Date)
       expect(session.updatedAt).toBeInstanceOf(Date)
@@ -30,22 +30,22 @@ describe('useScanning', () => {
     it('should add session to sessions array', () => {
       scanning.createSession('BOX-001', BoxStyle.SmallBox)
 
-      expect(scanning.sessions.length).toBe(1)
+      expect(scanning.sessions.value.length).toBe(1)
     })
 
     it('should set currentSessionId to new session', () => {
       const session = scanning.createSession('BOX-001', BoxStyle.SmallBox)
 
-      expect(scanning.currentSessionId).toBe(session.id)
+      expect(scanning.currentSessionId.value).toBe(session.id)
     })
 
     it('should pause previous active session when creating new one', () => {
       const session1 = scanning.createSession('BOX-001', BoxStyle.SmallBox)
       const session2 = scanning.createSession('BOX-002', BoxStyle.MediumBox)
 
-      expect(scanning.sessions[0].status).toBe('paused')
-      expect(scanning.sessions[1].status).toBe('active')
-      expect(scanning.currentSessionId).toBe(session2.id)
+      expect(scanning.sessions.value[0].status).toBe(SessionStatus.Paused)
+      expect(scanning.sessions.value[1].status).toBe(SessionStatus.Active)
+      expect(scanning.currentSessionId.value).toBe(session2.id)
     })
   })
 
@@ -67,8 +67,8 @@ describe('useScanning', () => {
 
       scanning.addProduct(product)
 
-      expect(scanning.currentSession?.products.length).toBe(1)
-      expect(scanning.currentSession?.products[0]).toEqual(product)
+      expect(scanning.currentSession.value?.products.length).toBe(1)
+      expect(scanning.currentSession.value?.products[0]).toEqual(product)
     })
 
     it('should increment quantity for duplicate barcode scans', () => {
@@ -85,8 +85,8 @@ describe('useScanning', () => {
       scanning.addProduct(product)
       scanning.addProduct(product)
 
-      expect(scanning.currentSession?.products.length).toBe(1)
-      expect(scanning.currentSession?.products[0].quantity).toBe(3)
+      expect(scanning.currentSession.value?.products.length).toBe(1)
+      expect(scanning.currentSession.value?.products[0].quantity).toBe(3)
     })
 
     it('should update lastScannedAt when incrementing quantity', () => {
@@ -100,12 +100,12 @@ describe('useScanning', () => {
       }
 
       scanning.addProduct(product)
-      const firstScanTime = scanning.currentSession?.products[0].lastScannedAt
+      const firstScanTime = scanning.currentSession.value?.products[0].lastScannedAt
 
       // Wait a bit
       setTimeout(() => {
         scanning.addProduct(product)
-        const secondScanTime = scanning.currentSession?.products[0].lastScannedAt
+        const secondScanTime = scanning.currentSession.value?.products[0].lastScannedAt
 
         expect(secondScanTime?.getTime()).toBeGreaterThan(firstScanTime?.getTime() || 0)
       }, 10)
@@ -139,7 +139,7 @@ describe('useScanning', () => {
       const beforeTime = new Date()
       scanning.addProduct(product)
 
-      expect(scanning.currentSession?.updatedAt.getTime()).toBeGreaterThanOrEqual(beforeTime.getTime())
+      expect(scanning.currentSession.value?.updatedAt.getTime()).toBeGreaterThanOrEqual(beforeTime.getTime())
     })
   })
 
@@ -150,29 +150,29 @@ describe('useScanning', () => {
 
       scanning.switchSession(session1.id)
 
-      expect(scanning.currentSessionId).toBe(session1.id)
+      expect(scanning.currentSessionId.value).toBe(session1.id)
     })
 
     it('should pause currently active session when switching', () => {
       const session1 = scanning.createSession('BOX-001', BoxStyle.SmallBox)
       const session2 = scanning.createSession('BOX-002', BoxStyle.MediumBox)
 
-      expect(scanning.sessions[1].status).toBe('active')
+      expect(scanning.sessions.value[1].status).toBe(SessionStatus.Active)
 
       scanning.switchSession(session1.id)
 
-      expect(scanning.sessions[1].status).toBe('paused')
+      expect(scanning.sessions.value[1].status).toBe(SessionStatus.Paused)
     })
 
     it('should activate paused session when switching to it', () => {
       const session1 = scanning.createSession('BOX-001', BoxStyle.SmallBox)
       const session2 = scanning.createSession('BOX-002', BoxStyle.MediumBox)
 
-      expect(scanning.sessions[0].status).toBe('paused')
+      expect(scanning.sessions.value[0].status).toBe(SessionStatus.Paused)
 
       scanning.switchSession(session1.id)
 
-      expect(scanning.sessions[0].status).toBe('active')
+      expect(scanning.sessions.value[0].status).toBe(SessionStatus.Active)
     })
 
     it('should throw error for non-existent session', () => {
@@ -186,35 +186,35 @@ describe('useScanning', () => {
     })
 
     it('should update session status from active to paused', () => {
-      scanning.updateSessionStatus('paused')
+      scanning.updateSessionStatus(SessionStatus.Paused)
 
-      expect(scanning.currentSession?.status).toBe('paused')
+      expect(scanning.currentSession.value?.status).toBe(SessionStatus.Paused)
     })
 
     it('should update session status from active to completed', () => {
-      scanning.updateSessionStatus('completed')
+      scanning.updateSessionStatus(SessionStatus.Completed)
 
-      expect(scanning.currentSession?.status).toBe('completed')
+      expect(scanning.currentSession.value?.status).toBe(SessionStatus.Completed)
     })
 
     it('should update session status from paused to active', () => {
-      scanning.updateSessionStatus('paused')
-      scanning.updateSessionStatus('active')
+      scanning.updateSessionStatus(SessionStatus.Paused)
+      scanning.updateSessionStatus(SessionStatus.Active)
 
-      expect(scanning.currentSession?.status).toBe('active')
+      expect(scanning.currentSession.value?.status).toBe(SessionStatus.Active)
     })
 
     it('should throw error for invalid transition from completed', () => {
-      scanning.updateSessionStatus('completed')
+      scanning.updateSessionStatus(SessionStatus.Completed)
 
-      expect(() => scanning.updateSessionStatus('active')).toThrow('Invalid status transition')
+      expect(() => scanning.updateSessionStatus(SessionStatus.Active)).toThrow('Invalid status transition')
     })
 
     it('should update session updatedAt timestamp', () => {
       const beforeTime = new Date()
-      scanning.updateSessionStatus('paused')
+      scanning.updateSessionStatus(SessionStatus.Paused)
 
-      expect(scanning.currentSession?.updatedAt.getTime()).toBeGreaterThanOrEqual(beforeTime.getTime())
+      expect(scanning.currentSession.value?.updatedAt.getTime()).toBeGreaterThanOrEqual(beforeTime.getTime())
     })
   })
 
@@ -234,10 +234,10 @@ describe('useScanning', () => {
       }
 
       scanning.addProduct(product)
-      expect(scanning.currentSession?.products.length).toBe(1)
+      expect(scanning.currentSession.value?.products.length).toBe(1)
 
       scanning.removeProduct('123456789012')
-      expect(scanning.currentSession?.products.length).toBe(0)
+      expect(scanning.currentSession.value?.products.length).toBe(0)
     })
 
     it('should not throw error when removing non-existent product', () => {
@@ -248,17 +248,17 @@ describe('useScanning', () => {
   describe('deleteSession', () => {
     it('should remove session from sessions array', () => {
       const session = scanning.createSession('BOX-001', BoxStyle.SmallBox)
-      expect(scanning.sessions.length).toBe(1)
+      expect(scanning.sessions.value.length).toBe(1)
 
       scanning.deleteSession(session.id)
-      expect(scanning.sessions.length).toBe(0)
+      expect(scanning.sessions.value.length).toBe(0)
     })
 
     it('should clear currentSessionId if deleting active session', () => {
       const session = scanning.createSession('BOX-001', BoxStyle.SmallBox)
 
       scanning.deleteSession(session.id)
-      expect(scanning.currentSessionId).toBeNull()
+      expect(scanning.currentSessionId.value).toBeNull()
     })
   })
 
@@ -270,7 +270,7 @@ describe('useScanning', () => {
           boxNumber: 'BOX-001',
           boxStyle: BoxStyle.SmallBox,
           products: [],
-          status: 'active' as SessionStatus,
+          status: SessionStatus.Active,
           createdAt: new Date(),
           updatedAt: new Date()
         }
@@ -278,8 +278,8 @@ describe('useScanning', () => {
 
       scanning.loadSessions(mockSessions)
 
-      expect(scanning.sessions.length).toBe(1)
-      expect(scanning.currentSessionId).toBe('1')
+      expect(scanning.sessions.value.length).toBe(1)
+      expect(scanning.currentSessionId.value).toBe('1')
     })
 
     it('should set current session to active session if one exists', () => {
@@ -289,7 +289,7 @@ describe('useScanning', () => {
           boxNumber: 'BOX-001',
           boxStyle: BoxStyle.SmallBox,
           products: [],
-          status: 'paused' as SessionStatus,
+          status: SessionStatus.Paused,
           createdAt: new Date(),
           updatedAt: new Date()
         },
@@ -298,7 +298,7 @@ describe('useScanning', () => {
           boxNumber: 'BOX-002',
           boxStyle: BoxStyle.MediumBox,
           products: [],
-          status: 'active' as SessionStatus,
+          status: SessionStatus.Active,
           createdAt: new Date(),
           updatedAt: new Date()
         }
@@ -306,7 +306,7 @@ describe('useScanning', () => {
 
       scanning.loadSessions(mockSessions)
 
-      expect(scanning.currentSessionId).toBe('2')
+      expect(scanning.currentSessionId.value).toBe('2')
     })
   })
 
@@ -315,12 +315,12 @@ describe('useScanning', () => {
       scanning.createSession('BOX-001', BoxStyle.SmallBox)
       scanning.createSession('BOX-002', BoxStyle.MediumBox)
 
-      expect(scanning.sessions.length).toBe(2)
+      expect(scanning.sessions.value.length).toBe(2)
 
       scanning.clearAllSessions()
 
-      expect(scanning.sessions.length).toBe(0)
-      expect(scanning.currentSessionId).toBeNull()
+      expect(scanning.sessions.value.length).toBe(0)
+      expect(scanning.currentSessionId.value).toBeNull()
     })
   })
 })

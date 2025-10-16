@@ -59,7 +59,8 @@
 </template>
 
 <script setup lang="ts">
-import type { BoxStyle } from '~/types/scanning'
+import type { BoxStyle, ScanningSession } from '~/types/scanning'
+import { SessionStatus } from '~/types/scanning'
 import BoxSetupForm from '~/components/BoxSetupForm.vue'
 import BarcodeScanner from '~/components/BarcodeScanner.vue'
 import ProductList from '~/components/ProductList.vue'
@@ -110,7 +111,7 @@ onMounted(() => {
 // Watch sessions and save all when changed (T037)
 watch(sessions, (newSessions) => {
   if (newSessions.length > 0) {
-    saveAllSessions(newSessions)
+    saveAllSessions([...newSessions] as ScanningSession[])
   }
 }, { deep: true })
 
@@ -181,7 +182,7 @@ const handleCompleteSession = () => {
 
   // Mark session as completed instead of clearing (T033)
   if (currentSession.value.products.length > 0) {
-    currentSession.value.status = 'completed'
+    currentSession.value.status = SessionStatus.Completed
     currentSession.value.updatedAt = new Date()
   }
 

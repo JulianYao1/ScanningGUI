@@ -8,7 +8,7 @@ global.reactive = reactive
 global.readonly = readonly
 
 // Mock Nuxt auto-imports
-global.$fetch = vi.fn()
+global.$fetch = vi.fn() as any
 
 // Mock localStorage for tests
 const localStorageMock = {

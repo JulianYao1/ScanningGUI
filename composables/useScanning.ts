@@ -1,7 +1,8 @@
 // composables/useScanning.ts
 // Scanning session state management composable
 
-import type { ScanningSession, SessionProduct, SessionStatus, BoxStyle } from '~/types/scanning'
+import type { ScanningSession, SessionProduct, BoxStyle } from '~/types/scanning'
+import { SessionStatus } from '~/types/scanning'
 import { v4 as uuidv4 } from 'uuid'
 
 export function useScanning() {
@@ -19,8 +20,8 @@ export function useScanning() {
     // Pause currently active session if exists (T033)
     if (currentSessionId.value) {
       const activeSession = sessions.value.find(s => s.id === currentSessionId.value)
-      if (activeSession && activeSession.status === 'active') {
-        activeSession.status = 'paused'
+      if (activeSession && activeSession.status === SessionStatus.Active) {
+        activeSession.status = SessionStatus.Paused
         activeSession.updatedAt = new Date()
       }
     }
@@ -30,7 +31,7 @@ export function useScanning() {
       boxNumber,
       boxStyle,
       products: [],
-      status: 'active' as SessionStatus,
+      status: SessionStatus.Active,
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -49,15 +50,15 @@ export function useScanning() {
     // Pause currently active session (T033)
     if (currentSessionId.value) {
       const activeSession = sessions.value.find(s => s.id === currentSessionId.value)
-      if (activeSession && activeSession.status === 'active') {
-        activeSession.status = 'paused'
+      if (activeSession && activeSession.status === SessionStatus.Active) {
+        activeSession.status = SessionStatus.Paused
         activeSession.updatedAt = new Date()
       }
     }
 
     // Activate target session (T033)
-    if (targetSession.status === 'paused') {
-      targetSession.status = 'active'
+    if (targetSession.status === SessionStatus.Paused) {
+      targetSession.status = SessionStatus.Active
       targetSession.updatedAt = new Date()
     }
 
@@ -99,9 +100,9 @@ export function useScanning() {
 
     // Status transition validation (T033)
     const validTransitions: Record<SessionStatus, SessionStatus[]> = {
-      active: ['paused', 'completed'],
-      paused: ['active', 'completed'],
-      completed: [] // Cannot transition from completed
+      [SessionStatus.Active]: [SessionStatus.Paused, SessionStatus.Completed],
+      [SessionStatus.Paused]: [SessionStatus.Active, SessionStatus.Completed],
+      [SessionStatus.Completed]: [] // Cannot transition from completed
     }
 
     const currentStatus = currentSession.value.status
@@ -135,7 +136,7 @@ export function useScanning() {
     sessions.value = loadedSessions
 
     // Set current session to the most recently active one
-    const activeSession = loadedSessions.find(s => s.status === 'active')
+    const activeSession = loadedSessions.find(s => s.status === SessionStatus.Active)
     if (activeSession) {
       currentSessionId.value = activeSession.id
     } else if (loadedSessions.length > 0) {
