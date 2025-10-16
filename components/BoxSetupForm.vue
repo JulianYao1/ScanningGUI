@@ -12,8 +12,11 @@
           data-testid="box-number"
           placeholder="Enter box number"
           required
+          maxlength="50"
           :disabled="disabled"
+          :class="{ 'input-error': validationError }"
         />
+        <span v-if="validationError" class="error-text">{{ validationError }}</span>
       </div>
 
       <div class="form-group">
@@ -38,7 +41,7 @@
       <button
         type="submit"
         data-testid="start-session"
-        :disabled="disabled || !boxNumber || !boxStyle"
+        :disabled="disabled || !boxNumber || !boxStyle || !!validationError"
       >
         Start Session
       </button>
@@ -62,15 +65,64 @@ const emit = defineEmits<Emits>()
 
 const boxNumber = ref('')
 const boxStyle = ref<BoxStyle | ''>('')
+const validationError = ref<string | null>(null)
+
+// Validate and sanitize box number
+const validateBoxNumber = (value: string): boolean => {
+  validationError.value = null
+
+  if (!value || value.trim().length === 0) {
+    validationError.value = 'Box number is required'
+    return false
+  }
+
+  // Check length (max 50 characters)
+  if (value.length > 50) {
+    validationError.value = 'Box number must be 50 characters or less'
+    return false
+  }
+
+  // Check for alphanumeric and allowed special characters (hyphens, underscores)
+  if (!/^[a-zA-Z0-9-_\s]+$/.test(value)) {
+    validationError.value = 'Box number can only contain letters, numbers, hyphens, and underscores'
+    return false
+  }
+
+  return true
+}
+
+// Sanitize box number on input
+const sanitizeBoxNumber = (value: string): string => {
+  // Remove any potentially problematic characters
+  return value.replace(/[^a-zA-Z0-9-_\s]/g, '')
+}
+
+// Watch box number for real-time validation
+watch(boxNumber, (newValue) => {
+  if (newValue) {
+    boxNumber.value = sanitizeBoxNumber(newValue)
+    if (newValue.length > 0) {
+      validateBoxNumber(newValue)
+    }
+  }
+})
 
 const handleSubmit = () => {
   if (!boxNumber.value || !boxStyle.value) return
 
-  emit('start-session', boxNumber.value, boxStyle.value as BoxStyle)
+  // Final validation before submission
+  if (!validateBoxNumber(boxNumber.value)) {
+    return
+  }
+
+  const sanitized = boxNumber.value.trim()
+
+  emit('start-session', sanitized, boxStyle.value as BoxStyle)
 
   // Reset form
   boxNumber.value = ''
   boxStyle.value = ''
+  validationError.value = null
 }
 </script>
 
@@ -144,5 +196,17 @@ button:hover:not(:disabled) {
 button:disabled {
   background: #ccc;
   cursor: not-allowed;
+}
+
+.input-error {
+  border-color: #ef5350 !important;
+  background: #ffebee;
+}
+
+.error-text {
+  display: block;
+  margin-top: 0.25rem;
+  color: #c62828;
+  font-size: 0.875rem;
 }
 </style>

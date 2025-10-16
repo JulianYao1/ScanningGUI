@@ -47,11 +47,35 @@ export default defineEventHandler(async (event) => {
   } catch (error: any) {
     if (error.statusCode) throw error // Re-throw H3 errors
 
-    console.error('Database query error:', error)
+    // Handle specific database connection errors
+    const errorCode = error.code
+    const errorMessage = error.message || ''
+
+    console.error('Database query error:', { code: errorCode, message: errorMessage })
+
+    // Connection errors
+    if (errorCode === 'ECONNREFUSED' || errorCode === 'ETIMEDOUT' || errorCode === 'ENOTFOUND') {
+      throw createError({
+        statusCode: 503,
+        statusMessage: 'Database Unavailable',
+        message: 'Unable to connect to product database. Please check your connection and try again.'
+      })
+    }
+
+    // Authentication errors
+    if (errorCode === 'ER_ACCESS_DENIED_ERROR') {
+      throw createError({
+        statusCode: 503,
+        statusMessage: 'Database Configuration Error',
+        message: 'Database authentication failed. Please contact support.'
+      })
+    }
+
+    // Generic database error
     throw createError({
       statusCode: 500,
       statusMessage: 'Database Error',
-      message: 'Unable to query product database'
+      message: 'Unable to query product database. Please try again later.'
     })
   }
 })

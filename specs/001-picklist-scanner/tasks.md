@@ -143,18 +143,18 @@ description: "Task list for picklist scanner feature implementation"
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T054 [P] Create date formatter utility in utils/dateFormatter.ts for timestamp display
-- [ ] T055 [P] Add loading states to product lookup (show spinner during API call)
-- [ ] T056 [P] Add loading states to CSV download (show generating message)
-- [ ] T057 [P] Implement database connection error handling (show user-friendly message if MySQL unavailable)
-- [ ] T058 [P] Add input validation for box number (alphanumeric, max length, sanitize special characters)
-- [ ] T059 [P] Add visual feedback for successful scans (flash/highlight effect)
-- [ ] T060 [P] Add empty state handling (show message when no products scanned)
-- [ ] T061 Optimize bundle size and check for lazy loading opportunities
-- [ ] T062 Test full workflow timing to meet SC-001 (complete in under 3 minutes)
-- [ ] T063 Test barcode recognition speed to meet SC-002 (95% recognized in under 2 seconds)
-- [ ] T064 Verify session persistence meets SC-003 (100% data integrity after app close)
-- [ ] T065 Run quickstart.md validation (follow setup guide, verify all commands work)
+- [X] T054 [P] Create date formatter utility in utils/dateFormatter.ts for timestamp display
+- [X] T055 [P] Add loading states to product lookup (show spinner during API call)
+- [X] T056 [P] Add loading states to CSV download (show generating message)
+- [X] T057 [P] Implement database connection error handling (show user-friendly message if MySQL unavailable)
+- [X] T058 [P] Add input validation for box number (alphanumeric, max length, sanitize special characters)
+- [X] T059 [P] Add visual feedback for successful scans (flash/highlight effect)
+- [X] T060 [P] Add empty state handling (show message when no products scanned)
+- [X] T061 Optimize bundle size and check for lazy loading opportunities
+- [X] T062 Test full workflow timing to meet SC-001 (complete in under 3 minutes)
+- [X] T063 Test barcode recognition speed to meet SC-002 (95% recognized in under 2 seconds)
+- [X] T064 Verify session persistence meets SC-003 (100% data integrity after app close)
+- [X] T065 Run quickstart.md validation (follow setup guide, verify all commands work)
 
 ---
 
