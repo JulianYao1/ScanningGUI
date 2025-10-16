@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pwsh -File .specify/scripts/powershell/create-new-feature.ps1 -Json \"I would like to build an app that assists in creating a picklist. The user will select box number and box style before scanning products that are inside the box. Each barcode represents a product from a database. Once the user is done scanning they can download a pickfile of the scanned products.\" -ShortName \"picklist-scanner\")",
+      "Bash(powershell -File .specify/scripts/powershell/create-new-feature.ps1 -Json \"I would like to build an app that assists in creating a picklist. The user will select box number and box style before scanning products that are inside the box. Each barcode represents a product from a database. Once the user is done scanning they can download a pickfile of the scanned products.\" -ShortName \"picklist-scanner\")",
+      "Bash(powershell -File .specify/scripts/powershell/check-prerequisites.ps1 -Json -PathsOnly)",
+      "Bash(powershell -File .specify/scripts/powershell/setup-plan.ps1 -Json)",
+      "Bash(powershell -File .specify/scripts/powershell/update-agent-context.ps1 -AgentType claude)",
+      "Bash(powershell -File .specify/scripts/powershell/check-prerequisites.ps1 -Json)",
+      "Bash(powershell -File .specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks)",
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(npx nuxi typecheck:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run test:unit:*)",
+      "Bash(Select-String -Pattern \"(Test Files|Tests |failed|passed)\")",
+      "Bash(Select-Object -Last 10)",
+      "Bash(timeout 60 npx nuxi typecheck:*)",
+      "Bash(npx vue-tsc:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
