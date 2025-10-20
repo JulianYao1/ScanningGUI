@@ -1,14 +1,14 @@
 /**
- * CSV Formatter Utility
+ * TXT Formatter Utility
  *
- * Generates CSV files with proper escaping and Excel compatibility.
- * Per FR-013: CSV format with columns: Box Number, Box Style, Barcode,
+ * Generates TXT files for picklist exports.
+ * Per FR-013: Text format with columns: Box Number, Box Style, Barcode,
  * Product Name, SKU, Quantity, Unit Price, Total Price
  */
 
 import type { ScanningSession, SessionProduct } from '~/types/scanning'
 
-export interface CsvRow {
+export interface PicklistRow {
   boxNumber: string
   boxStyle: string
   barcode: string
@@ -17,23 +17,6 @@ export interface CsvRow {
   quantity: number
   unitPrice: string
   totalPrice: string
-}
-
-/**
- * Escapes a field value for CSV format
- * - Wraps in quotes if contains comma, quote, or newline
- * - Doubles any internal quotes
- */
-export function escapeCsvField(value: string | number): string {
-  const str = String(value)
-
-  // Check if escaping is needed
-  if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
-    // Double any existing quotes and wrap in quotes
-    return `"${str.replace(/"/g, '""')}"`
-  }
-
-  return str
 }
 
 /**
@@ -47,9 +30,9 @@ export function formatPrice(price: number | undefined): string {
 }
 
 /**
- * Converts a session to CSV row objects
+ * Converts a session to picklist row objects
  */
-export function sessionToCsvRows(session: ScanningSession): CsvRow[] {
+export function sessionToPicklistRows(session: ScanningSession): PicklistRow[] {
   return session.products.map((product: SessionProduct) => {
     const unitPrice = product.price ?? 0
     const totalPrice = product.price ? product.price * product.quantity : 0
@@ -68,56 +51,60 @@ export function sessionToCsvRows(session: ScanningSession): CsvRow[] {
 }
 
 /**
- * Generates CSV content from session data
- * Includes UTF-8 BOM for Excel compatibility
+ * Generates TXT content from session data
+ * Creates a formatted text file with tab-separated values
  */
-export function generateCsv(session: ScanningSession): string {
-  const rows = sessionToCsvRows(session)
+export function generateTxt(session: ScanningSession): string {
+  const rows = sessionToPicklistRows(session)
 
-  // CSV header
-  const headers = [
-    'Box Number',
-    'Box Style',
-    'Barcode',
-    'Product Name',
-    'SKU',
-    'Quantity',
-    'Unit Price',
-    'Total Price'
-  ]
+  // Build text lines
+  const txtLines: string[] = []
 
-  // Build CSV lines
-  const csvLines: string[] = []
+  // Add header
+  txtLines.push('PICKLIST')
+  txtLines.push('=' .repeat(80))
+  txtLines.push('')
+  txtLines.push(`Box Number: ${session.boxNumber}`)
+  txtLines.push(`Box Style: ${session.boxStyle}`)
+  txtLines.push(`Date: ${new Date().toLocaleString()}`)
+  txtLines.push(`Total Products: ${session.products.length}`)
+  txtLines.push('')
+  txtLines.push('=' .repeat(80))
+  txtLines.push('')
 
-  // Add header row
-  csvLines.push(headers.map(escapeCsvField).join(','))
+  // Add column headers
+  txtLines.push('Barcode\t\tProduct Name\t\tSKU\t\tQty\tUnit Price\tTotal Price')
+  txtLines.push('-' .repeat(80))
 
   // Add data rows
   rows.forEach(row => {
-    const line = [
-      escapeCsvField(row.boxNumber),
-      escapeCsvField(row.boxStyle),
-      escapeCsvField(row.barcode),
-      escapeCsvField(row.productName),
-      escapeCsvField(row.sku),
-      escapeCsvField(row.quantity),
-      escapeCsvField(row.unitPrice),
-      escapeCsvField(row.totalPrice)
-    ].join(',')
-
-    csvLines.push(line)
+    const line = `${row.barcode}\t\t${row.productName}\t\t${row.sku}\t\t${row.quantity}\t${row.unitPrice}\t${row.totalPrice}`
+    txtLines.push(line)
   })
 
-  // Join with newlines
-  const csvContent = csvLines.join('\n')
+  // Add footer
+  txtLines.push('')
+  txtLines.push('=' .repeat(80))
 
-  // Add UTF-8 BOM for Excel compatibility (per T030)
-  return '\ufeff' + csvContent
+  // Calculate totals
+  const totalItems = rows.reduce((sum, row) => sum + row.quantity, 0)
+  const totalPrice = rows.reduce((sum, row) => {
+    const price = parseFloat(row.totalPrice) || 0
+    return sum + price
+  }, 0)
+
+  txtLines.push(`Total Items: ${totalItems}`)
+  if (totalPrice > 0) {
+    txtLines.push(`Total Price: $${totalPrice.toFixed(2)}`)
+  }
+  txtLines.push('=' .repeat(80))
+
+  return txtLines.join('\n')
 }
 
 /**
  * Generates filename for picklist download
- * Format: picklist_BOX-NUMBER_YYYY-MM-DD_HH-MM-SS.csv
+ * Format: picklist_BOX-NUMBER_YYYY-MM-DD_HH-MM-SS.txt
  */
 export function generateFilename(session: ScanningSession): string {
   const timestamp = new Date().toISOString()
@@ -127,5 +114,5 @@ export function generateFilename(session: ScanningSession): string {
 
   const sanitizedBoxNumber = session.boxNumber.replace(/[^a-zA-Z0-9-_]/g, '_')
 
-  return `picklist_${sanitizedBoxNumber}_${timestamp}.csv`
+  return `picklist_${sanitizedBoxNumber}_${timestamp}.txt`
 }

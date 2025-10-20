@@ -1,12 +1,12 @@
 /**
  * Picklist Export Composable
  *
- * Handles CSV generation and download for scanning sessions
+ * Handles TXT generation and download for scanning sessions
  * Implements FR-013: Download picklist file capability
  */
 
 import type { ScanningSession } from '~/types/scanning'
-import { generateCsv, generateFilename } from '~/utils/csvFormatter'
+import { generateTxt, generateFilename } from '~/utils/csvFormatter'
 
 export interface ExportState {
   isExporting: boolean
@@ -20,26 +20,26 @@ export function usePicklistExport() {
   })
 
   /**
-   * Generates CSV content from a session
+   * Generates TXT content from a session
    */
-  const generateCsvContent = (session: ScanningSession): string => {
-    return generateCsv(session)
+  const generateTxtContent = (session: ScanningSession): string => {
+    return generateTxt(session)
   }
 
   /**
-   * Triggers browser download of CSV file
+   * Triggers browser download of TXT file
    * Uses Blob API and anchor element download
    */
-  const downloadCsv = (session: ScanningSession): void => {
+  const downloadTxt = (session: ScanningSession): void => {
     try {
       state.isExporting = true
       state.error = null
 
-      // Generate CSV content
-      const csvContent = generateCsvContent(session)
+      // Generate TXT content
+      const txtContent = generateTxtContent(session)
 
-      // Create Blob with CSV content
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+      // Create Blob with TXT content
+      const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' })
 
       // Generate filename
       const filename = generateFilename(session)
@@ -60,8 +60,8 @@ export function usePicklistExport() {
       document.body.removeChild(link)
       URL.revokeObjectURL(url)
     } catch (error) {
-      console.error('Failed to download CSV:', error)
-      state.error = error instanceof Error ? error.message : 'Failed to download CSV'
+      console.error('Failed to download TXT:', error)
+      state.error = error instanceof Error ? error.message : 'Failed to download TXT'
     } finally {
       state.isExporting = false
     }
@@ -80,13 +80,13 @@ export function usePicklistExport() {
   }
 
   /**
-   * Gets a preview of CSV content (first 5 rows)
+   * Gets a preview of TXT content (first 15 rows)
    * Useful for testing or showing preview to user
    */
-  const previewCsv = (session: ScanningSession, maxRows: number = 5): string => {
-    const csvContent = generateCsvContent(session)
-    const lines = csvContent.split('\n')
-    const previewLines = lines.slice(0, maxRows + 1) // +1 for header
+  const previewTxt = (session: ScanningSession, maxRows: number = 15): string => {
+    const txtContent = generateTxtContent(session)
+    const lines = txtContent.split('\n')
+    const previewLines = lines.slice(0, maxRows)
     return previewLines.join('\n')
   }
 
@@ -94,9 +94,9 @@ export function usePicklistExport() {
     state: readonly(state),
     isExporting: computed(() => state.isExporting),
     error: computed(() => state.error),
-    generateCsvContent,
-    downloadCsv,
+    generateTxtContent,
+    downloadTxt,
     canExport,
-    previewCsv
+    previewTxt
   }
 }

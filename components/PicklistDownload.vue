@@ -39,7 +39,7 @@ interface Props {
 const props = defineProps<Props>()
 
 // Composable for export logic
-const { isExporting, error, downloadCsv, canExport } = usePicklistExport()
+const { isExporting, error, downloadTxt, canExport } = usePicklistExport()
 
 // Computed properties
 const canDownload = computed(() => canExport(props.session))
@@ -50,7 +50,7 @@ const totalQuantity = computed(() => {
 })
 
 const buttonText = computed(() => {
-  if (isExporting.value) return 'Generating CSV...'
+  if (isExporting.value) return 'Generating TXT...'
   if (!canDownload.value) return 'Download Picklist'
   return 'Download Picklist'
 })
@@ -65,7 +65,7 @@ const buttonClasses = computed(() => ({
 // Actions
 const handleDownload = () => {
   if (!props.session || !canDownload.value) return
-  downloadCsv(props.session)
+  downloadTxt(props.session)
 }
 </script>
 
