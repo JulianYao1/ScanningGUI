@@ -18,12 +18,12 @@ export enum SessionStatus {
 }
 
 export enum BoxStyle {
-  Envelope = 'Envelope',
-  SmallBox = 'Small Box',
-  MediumBox = 'Medium Box',
-  LargeBox = 'Large Box',
-  FlatRate = 'Flat Rate',
-  Tube = 'Tube'
+  H3 = 'H3',
+  H4 = 'H4',
+  H5 = 'H5',
+  S2 = 'S2',
+  S3 = 'S3',
+  MASK = 'Mask Carton'
 }
 
 export interface SessionProduct {

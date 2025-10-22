@@ -26,7 +26,9 @@ export function useBarcodeScanner(options: BarcodeScannerOptions) {
       onKeyDetect: (iKeyCode: number) => {
         // Debug: Log key detection if needed
         // console.log('Key detected:', iKeyCode)
-      }
+      },
+      // Allow typing in input/textarea/select elements
+      ignoreIfFocusOn: 'input,textarea,select'
     })
 
     isInitialized.value = true

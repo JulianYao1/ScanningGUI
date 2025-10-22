@@ -29,12 +29,9 @@
           :disabled="disabled"
         >
           <option value="">Select box style</option>
-          <option value="Envelope">Envelope</option>
-          <option value="Small Box">Small Box</option>
-          <option value="Medium Box">Medium Box</option>
-          <option value="Large Box">Large Box</option>
-          <option value="Flat Rate">Flat Rate</option>
-          <option value="Tube">Tube</option>
+          <option v-for="style in boxStyleOptions" :key="style" :value="style">
+            {{ style }}
+          </option>
         </select>
       </div>
 
@@ -50,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BoxStyle } from '~/types/scanning'
+import { BoxStyle } from '~/types/scanning'
 
 interface Props {
   disabled?: boolean
@@ -62,6 +59,9 @@ interface Emits {
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
+
+// Generate box style options from enum
+const boxStyleOptions = Object.values(BoxStyle)
 
 const boxNumber = ref('')
 const boxStyle = ref<BoxStyle | ''>('')

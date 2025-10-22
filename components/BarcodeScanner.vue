@@ -18,6 +18,19 @@
       </div>
     </div>
 
+    <div class="input-section">
+      <label for="barcode-input">Barcode</label>
+      <input
+        id="barcode-input"
+        ref="barcodeInput"
+        v-model="manualInput"
+        type="text"
+        placeholder="Scan or type barcode here..."
+        @keyup.enter="handleManualSubmit"
+        autocomplete="off"
+      />
+    </div>
+
     <div class="scanner-info">
       <p>Scan a barcode using your scanner or type manually and press Enter</p>
     </div>
@@ -34,15 +47,26 @@ interface Emits {
 const emit = defineEmits<Emits>()
 
 const lastScanned = ref<string | null>(null)
+const manualInput = ref('')
+const barcodeInput = ref<HTMLInputElement | null>(null)
 
 const handleScan = (barcode: string) => {
   lastScanned.value = barcode
   emit('scan', barcode)
 
+  // Clear manual input
+  manualInput.value = ''
+
   // Clear feedback after 2 seconds
   setTimeout(() => {
     lastScanned.value = null
   }, 2000)
+}
+
+const handleManualSubmit = () => {
+  if (manualInput.value.trim()) {
+    handleScan(manualInput.value.trim())
+  }
 }
 
 const { isInitialized } = useBarcodeScanner({
@@ -116,6 +140,37 @@ const { isInitialized } = useBarcodeScanner({
 .check-icon {
   font-size: 1.25rem;
   font-weight: bold;
+}
+
+.input-section {
+  margin: 1rem 0;
+}
+
+.input-section label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.input-section input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #4CAF50;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-section input:focus {
+  outline: none;
+  border-color: #45a049;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.input-section input::placeholder {
+  color: #999;
 }
 
 .scanner-info {
